@@ -49,6 +49,9 @@ COPY --from=builder /venv /venv
 # Copy application source code
 COPY --chown=appuser:appgroup . .
 
+# Create writable log directory for the non-root user
+RUN mkdir -p /app/logs && chown -R appuser:appgroup /app/logs
+
 # Make the venv binaries available on PATH
 ENV PATH="/venv/bin:$PATH"
 ENV PYTHONPATH="/app"
