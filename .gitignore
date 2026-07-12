@@ -1,0 +1,101 @@
+# ================================
+# AI Resume Reviewer — .gitignore
+# ================================
+
+# ---- Environment files ----
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# ---- Node.js / Frontend ----
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel/
+frontend/dist/
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- Python / Backend ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.pyc
+.Python
+backend/.venv/
+backend/venv/
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+backend/logs/
+*.log
+
+# ---- Machine Learning Models ----
+# sentence-transformers models are large, don't commit
+backend/models/
+backend/.cache/
+backend/app/ai/models/
+
+# ---- Database ----
+*.sqlite
+*.db
+*.sql
+migrations/versions/*.pyc
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.directory
+
+# ---- IDE ----
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ---- Docker ----
+.docker/
+
+# ---- Local archives / exports ----
+frontend.zip
+
+# ---- Uploads (local dev) ----
+backend/uploads/
+backend/tmp/
+
+# ---- Coverage ----
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# ---- Vercel ----
+.vercel
+
+# ---- Render ----
+.render/
