@@ -53,7 +53,8 @@ class Settings(BaseSettings):
     # ── App Meta ─────────────────────────────────────────────────────────────
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "INFO"
-    LOG_DIR: str = "logs"
+    # LOG_DIR: str = "logs"
+    LOG_DIR: str = "/tmp/logs"
     API_V1_STR: str = "/api/v1"
 
     # ── Derived Properties ───────────────────────────────────────────────────
