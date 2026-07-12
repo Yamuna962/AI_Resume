@@ -23,19 +23,45 @@ It uploads a resume PDF, parses it, compares it against a job description, compu
 
 ## Current runtime flow
 
+````markdown
+## Current Runtime Flow
+
 ```mermaid
-flowchart TD
-    A[Browser] --> B[Next.js Frontend]
-    B --> C[/api/v1 proxy route]
-    C --> D[FastAPI Backend]
-    D --> E[Resume PDF extraction]
-    E --> F[ATS Orchestrator]
-    F --> G[Deterministic scoring]
-    G --> H[LLM explanation + audit]
-    H --> I[PostgreSQL / Supabase]
-    H --> J[JSON response]
-    J --> B
-```
+flowchart LR
+
+    User([👤 User])
+
+    Browser["🌐 Browser"]
+    Frontend["⚛️ Next.js Frontend"]
+
+    Proxy["🔀 Next.js API Proxy<br/>/api/v1"]
+
+    Backend["🚀 FastAPI Backend"]
+
+    PDF["📄 Resume PDF Extraction"]
+
+    ATS["🧠 ATS Orchestrator"]
+
+    Score["📊 Deterministic ATS Engine"]
+
+    LLM["🤖 LLM Recruiter Explanation<br/>+ Audit"]
+
+    DB[("🗄️ PostgreSQL / Supabase")]
+
+    Response["📦 JSON Response"]
+
+    User --> Browser
+    Browser --> Frontend
+    Frontend --> Proxy
+    Proxy --> Backend
+    Backend --> PDF
+    PDF --> ATS
+    ATS --> Score
+    Score --> LLM
+    LLM --> DB
+    LLM --> Response
+    Response --> Frontend
+    Frontend --> Browser
 
 ### Important frontend/backend calling detail
 The frontend **does not call the backend directly from the browser**.
