@@ -33,61 +33,56 @@ export default function LoginPage() {
   }, [token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-    try {
-      if (mode === 'register') {
-        // Register — backend returns UserResponse, then we log in automatically
-        await api.post('/auth/register', {
-          email,
-          password,
-          full_name: fullName,
-        });
-      }
-
-      // Login — backend expects JSON { email, password } and returns { access_token, token_type, expires_in, user }
-      const res = await api.post<LoginResponse>('/auth/login', { email, password });
-
-      const accessToken = res.data.access_token;
-      const userData = res.data.user;
-
-      setToken(accessToken);
-      setUser(userData);
-
-      // Brief pause so Zustand persist writes before dashboard API calls
-      await new Promise((r) => setTimeout(r, 50));
-      router.replace('/dashboard');
-    // } catch (error: unknown) {
-      // if (isNetworkError(error)) {
-      //   setError('Cannot reach the server. Make sure the backend is running (port 8000) and restart the frontend dev server.');
-      // } else {
-      //   setError(getApiErrorMessage(error, 'Something went wrong. Please try again.'));
-      console.error("LOGIN ERROR:", error);
-
-    
-    } catch (error) {
-      console.error("LOGIN ERROR:", error);
-    
-      if (isNetworkError(error)) {
-        setError(
-          error instanceof Error
-            ? error.message
-            : JSON.stringify(error)
-        );
-      } else {
-        setError(
-          getApiErrorMessage(
-            error,
-            "Something went wrong. Please try again."
-          )
-        );
-      }
-    } finally {
-      setLoading(false);
+  try {
+    if (mode === 'register') {
+      await api.post('/auth/register', {
+        email,
+        password,
+        full_name: fullName,
+      });
     }
-  };
+
+    const res = await api.post<LoginResponse>('/auth/login', {
+      email,
+      password,
+    });
+
+    const accessToken = res.data.access_token;
+    const userData = res.data.user;
+
+    setToken(accessToken);
+    setUser(userData);
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    router.replace('/dashboard');
+
+  } catch (error: unknown) {
+    console.error("LOGIN ERROR:", error);
+
+    if (isNetworkError(error)) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : JSON.stringify(error)
+      );
+    } else {
+      setError(
+        getApiErrorMessage(
+          error,
+          'Something went wrong. Please try again.'
+        )
+      );
+    }
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={{
