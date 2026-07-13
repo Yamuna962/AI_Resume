@@ -59,22 +59,30 @@ export default function LoginPage() {
       // Brief pause so Zustand persist writes before dashboard API calls
       await new Promise((r) => setTimeout(r, 50));
       router.replace('/dashboard');
-    } catch (error: unknown) {
+    // } catch (error: unknown) {
       // if (isNetworkError(error)) {
       //   setError('Cannot reach the server. Make sure the backend is running (port 8000) and restart the frontend dev server.');
       // } else {
       //   setError(getApiErrorMessage(error, 'Something went wrong. Please try again.'));
       console.error("LOGIN ERROR:", error);
 
-    if (isNetworkError(error)) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : JSON.stringify(error)
-      );
-    } else {
-      setError(getApiErrorMessage(error, 'Something went wrong. Please try again.'));
-    }
+    
+    } catch (error) {
+      console.error("LOGIN ERROR:", error);
+    
+      if (isNetworkError(error)) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : JSON.stringify(error)
+        );
+      } else {
+        setError(
+          getApiErrorMessage(
+            error,
+            "Something went wrong. Please try again."
+          )
+        );
       }
     } finally {
       setLoading(false);
