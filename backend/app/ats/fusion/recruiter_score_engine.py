@@ -28,8 +28,8 @@ _BASE_MATCH: dict[str, float] = {
 }
 
 _BASE_ATS: dict[str, float] = {
-    "formatting": 0.05,
-    "required_skills": 0.35,
+    "formatting": 0.20,
+    "required_skills": 0.20,
     "semantic": 0.25,
     "experience": 0.20,
     "projects": 0.10,
@@ -234,9 +234,8 @@ def calculate_match_score(
         else 100.0
     )
 
-    # 
-    required_component = (
-    keyword.required_skill_score * 0.50 +semantic.semantic_score * 0.50
+    required_component = round(
+        keyword.required_skill_score * 0.65 + semantic.semantic_score * 0.35, 2
     )
     preferred_component = 100.0
     if w.applicable_sections.get("preferred_skills"):
@@ -289,7 +288,7 @@ def calculate_ats_score(
     aw = w.ats_weights
 
     keyword_discoverability = round(
-        keyword.required_skill_score * 0.75 + keyword.preferred_skill_score * 0.25, 2
+        keyword.required_skill_score * 0.6 + keyword.preferred_skill_score * 0.4, 2
     )
 
     proj_val = (
