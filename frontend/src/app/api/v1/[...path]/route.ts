@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const BACKEND_URL =
   process.env.BACKEND_URL ||
   process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') ||
-  'http://127.0.0.1:8000';
+  'https://new-jars-scream.loca.lt';
 
 const BACKEND_UNAVAILABLE_MESSAGE =
   'Backend service unavailable. Start the backend server and ensure PostgreSQL is running.';
@@ -40,7 +40,8 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   });
 
   // Required for free Pinggy tunnels
-  headers.set("X-Pinggy-No-Screen", "true");
+  // Required for localtunnel bypass
+  headers.set("bypass-tunnel-reminder", "true");
 
   // Optional: set a custom User-Agent
   headers.set("User-Agent", "AI-Resume-Vercel");
