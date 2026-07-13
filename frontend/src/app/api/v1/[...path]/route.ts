@@ -39,6 +39,12 @@ async function proxyRequest(request: NextRequest, path: string[]) {
     }
   });
 
+  // Required for free Pinggy tunnels
+  headers.set("X-Pinggy-No-Screen", "true");
+
+  // Optional: set a custom User-Agent
+  headers.set("User-Agent", "AI-Resume-Vercel");
+
   const init: RequestInit = {
     method: request.method,
     headers,
@@ -50,28 +56,50 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   }
 
   try {
-    const backendRes = await fetch(url.toString(), init);
+      const backendRes = await fetch(url.toString(), init);
 
-    // Read response body
-    const body = await backendRes.text();
+      const responseHeaders = new Headers();
 
-    // Only forward safe headers
-    const responseHeaders = new Headers();
+      backendRes.headers.forEach((value, key) => {
+        const lower = key.toLowerCase();
 
-    const contentType = backendRes.headers.get('content-type');
-    if (contentType) {
-      responseHeaders.set('content-type', contentType);
-    }
+        if (
+          lower === "transfer-encoding" ||
+          lower === "connection"
+        ) {
+          return;
+        }
 
-    const cacheControl = backendRes.headers.get('cache-control');
-    if (cacheControl) {
-      responseHeaders.set('cache-control', cacheControl);
-    }
+        responseHeaders.set(key, value);
+      });
 
-    return new NextResponse(body, {
-      status: backendRes.status,
-      headers: responseHeaders,
-    });
+      return new NextResponse(backendRes.body, {
+        status: backendRes.status,
+        headers: responseHeaders,
+      });
+//     const backendRes = await fetch(url.toString(), init);
+
+//     // Read response body
+//     const body = await backendRes.text();
+// // 
+//     // Only forward safe headers
+//     const responseHeaders = new Headers();
+
+//     const contentType = backendRes.headers.get('content-type');
+//     if (contentType) {
+//       responseHeaders.set('content-type', contentType);
+//     }
+
+//     const cacheControl = backendRes.headers.get('cache-control');
+//     if (cacheControl) {
+//       responseHeaders.set('cache-control', cacheControl);
+//     }
+
+//     return new NextResponse(body, {
+//       status: backendRes.status,
+//       headers: responseHeaders,
+//     });
+
   } catch (error) {
     console.error('========== PROXY ERROR ==========');
     console.error('Backend URL:', BACKEND_URL);
