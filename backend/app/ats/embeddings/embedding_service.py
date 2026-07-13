@@ -116,11 +116,11 @@ from __future__ import annotations
 import os
 import numpy as np
 from loguru import logger
-
 from huggingface_hub import InferenceClient
 
 PRIMARY_MODEL = "BAAI/bge-small-en-v1.5"
 FALLBACK_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+
 
 class EmbeddingService:
     """Singleton embedding generator leveraging free remote inference."""
@@ -129,7 +129,6 @@ class EmbeddingService:
     def __new__(cls) -> "EmbeddingService":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            # Fetch token from Railway environment variables
             token = os.getenv("HF_TOKEN")
             cls._instance._client = InferenceClient(token=token)
         return cls._instance
@@ -138,23 +137,18 @@ class EmbeddingService:
         """Return L2-normalized embeddings via Serverless API."""
         if not texts:
             return np.zeros((0, 384))
-        
+
         for model_name in (PRIMARY_MODEL, FALLBACK_MODEL):
             try:
                 logger.info(f"Requesting embeddings from API: {model_name}")
-                # Call Hugging Face API to extract features remotely
                 response = self._client.feature_extraction(text=texts, model=model_name)
                 embeddings = np.array(response, dtype=np.float64)
-                
-                # Manually L2-normalize the resulting vectors
                 norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
-                # Avoid division by zero
                 norms = np.where(norms == 0, 1.0, norms)
                 return embeddings / norms
-                
             except Exception as exc:
                 logger.warning(f"API failed for {model_name}: {exc}")
-                
+
         raise RuntimeError("Both remote embedding models failed or rate-limited.")
 
     @staticmethod
@@ -163,23 +157,25 @@ class EmbeddingService:
             return 0.0
         return float(np.clip(np.dot(a, b), -1.0, 1.0))
 
-        @staticmethod
-        def similarity_to_bucket(similarity: float) -> float:
-            if similarity >= 0.90:
-                return 100.0
-            if similarity >= 0.85:
-                return 95.0
-            if similarity >= 0.80:
-                return 88.0
-            if similarity >= 0.75:
-                return 80.0
-            if similarity >= 0.70:
-                return 72.0
-            if similarity >= 0.65:
-                return 63.0
-            if similarity >= 0.55: 
-                return 52.0
-            if similarity >= 0.45:
-                return 38.0
-            return 0.0
+    @staticmethod                          # ← fixed: now at class level
+    def similarity_to_bucket(similarity: float) -> float:
+        if similarity >= 0.90:
+            return 100.0
+        if similarity >= 0.85:
+            return 95.0
+        if similarity >= 0.80:
+            return 88.0
+        if similarity >= 0.75:
+            return 80.0
+        if similarity >= 0.70:
+            return 72.0
+        if similarity >= 0.65:
+            return 63.0
+        if similarity >= 0.55:
+            return 52.0
+        if similarity >= 0.45:
+            return 38.0
+        return 0.0
+
+
 embedding_service = EmbeddingService()
