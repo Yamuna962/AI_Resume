@@ -25,5 +25,5 @@ numpy==1.26.4
 scikit-learn==1.5.2
 alembic==1.14.0
 aiofiles==24.1.0
-bcrypt==4.2.1
+bcrypt==4.2.2
 spacy==3.8.2
