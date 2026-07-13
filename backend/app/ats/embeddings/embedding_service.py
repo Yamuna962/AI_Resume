@@ -109,6 +109,8 @@
 
 
 # embedding_service = EmbeddingService()
+
+
 """Deterministic embedding service using Hugging Face Free Inference API."""
 from __future__ import annotations
 import os
