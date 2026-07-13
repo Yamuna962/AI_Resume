@@ -34,7 +34,11 @@ class EmbeddingService:
         for model_name in (PRIMARY_MODEL, FALLBACK_MODEL):
             try:
                 logger.info(f"Loading embedding model: {model_name}")
-                self._model = SentenceTransformer(model_name)
+                # self._model = SentenceTransformer(model_name)
+                self._model = SentenceTransformer(
+                    model_name,
+                    cache_folder="/app/.cache/huggingface",
+                )
                 self._model_name = model_name
                 return
             except Exception as exc:
@@ -46,8 +50,12 @@ class EmbeddingService:
         if not texts:
             return np.zeros((0, 384))
         self._load()
+        # if self._model is None:
+        #     return np.zeros((len(texts), 384))
         if self._model is None:
-            return np.zeros((len(texts), 384))
+            raise RuntimeError(
+                "Embedding model could not be loaded. Semantic matching is unavailable."
+            )
         embeddings = self._model.encode(
             texts,
             convert_to_numpy=True,
