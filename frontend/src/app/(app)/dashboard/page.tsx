@@ -27,110 +27,58 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', color: '#f0f0ff' }}>
+    <div className="flex flex-col gap-8 text-foreground">
       {/* Header */}
       <div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.375rem' }}>
-          Welcome back, {firstName}! 👋
-        </h1>
-        <p style={{ color: '#8888aa', fontSize: '0.95rem' }}>
-          Here&apos;s an overview of your resume performance.
-        </p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold mb-1">Welcome back, {firstName}! 👋</h1>
+        <p className="text-sm text-muted-foreground">Here&apos;s an overview of your resume performance.</p>
       </div>
 
       {/* Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((s, i) => (
-          <div key={i} style={{
-            background: 'rgba(15,15,26,0.9)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: '1rem',
-            padding: '1.25rem',
-            display: 'flex', alignItems: 'center', gap: '1rem',
-            transition: 'border-color 0.2s',
-          }}>
-            <div style={{
-              width: '2.75rem', height: '2.75rem', borderRadius: '0.75rem', flexShrink: 0,
-              background: `${s.color}18`, border: `1px solid ${s.color}30`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color,
-            }}>
+          <div key={i} className="bg-card border border-border rounded-lg p-4 flex items-center gap-4 transition-colors">
+            <div style={{ background: `${s.color}18`, border: `1px solid ${s.color}30` }} className="w-11 h-11 rounded-lg flex items-center justify-center text-lg text-primary flex-shrink-0">
               {s.icon}
             </div>
             <div>
-              <div style={{ fontSize: '0.75rem', color: '#8888aa', marginBottom: '0.25rem' }}>{s.label}</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f0ff', lineHeight: 1 }}>{s.value}</div>
+              <div className="text-xs text-muted-foreground mb-1">{s.label}</div>
+              <div className="text-2xl font-extrabold">{s.value}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* CTA Card */}
-      <div style={{
-        background: 'rgba(15,15,26,0.9)',
-        border: '1px solid rgba(124,58,237,0.15)',
-        borderRadius: '1.25rem',
-        padding: '2.5rem',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse at center top, rgba(124,58,237,0.08) 0%, transparent 60%)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          width: '4rem', height: '4rem', borderRadius: '1rem',
-          background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 1.5rem', color: '#a78bfa',
-        }}>
+      <div className="bg-card border border-primary/20 rounded-2xl p-6 text-center relative overflow-hidden">
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at center top, rgba(124,58,237,0.08) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div className="w-16 h-16 rounded-lg mx-auto mb-4 flex items-center justify-center text-primary bg-primary/10 border border-primary/20">
           <UploadCloud size={28} />
         </div>
-        <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.75rem', position: 'relative' }}>
-          Ready to land your next job?
-        </h2>
-        <p style={{ color: '#8888aa', maxWidth: '420px', margin: '0 auto 2rem', lineHeight: 1.7, fontSize: '0.9rem', position: 'relative' }}>
-          Upload your resume and paste a job description to get an instant ATS score, skill gap analysis, and AI-powered rewrite.
-        </p>
-        <Link href="/upload" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-          padding: '0.75rem 1.75rem', borderRadius: '0.75rem',
-          background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-          color: 'white', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem',
-          boxShadow: '0 4px 20px rgba(124,58,237,0.3)', position: 'relative',
-          transition: 'all 0.2s',
-        }}>
+        <h2 className="text-xl font-bold mb-2">Ready to land your next job?</h2>
+        <p className="text-sm text-muted-foreground mx-auto max-w-lg leading-relaxed mb-6">Upload your resume and paste a job description to get an instant ATS score, skill gap analysis, and AI-powered rewrite.</p>
+        <Link href="/upload" className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold shadow-lg">
           Start New Analysis
           <ArrowRight size={16} />
         </Link>
       </div>
 
       {/* Tips Card */}
-      <div style={{
-        background: 'rgba(15,15,26,0.9)',
-        border: '1px solid rgba(6,182,212,0.12)',
-        borderRadius: '1.25rem',
-        padding: '1.5rem 2rem',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.25rem' }}>
+      <div className="bg-card border border-accent/20 rounded-2xl p-4">
+        <div className="flex items-center gap-2 mb-4">
           <TrendingUp size={18} color="#22d3ee" />
-          <h3 style={{ fontWeight: 700, fontSize: '1rem', color: '#f0f0ff' }}>Quick Tips to Boost Your Score</h3>
+          <h3 className="font-bold text-base">Quick Tips to Boost Your Score</h3>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { tip: 'Use exact keywords from the job description', icon: '🎯' },
             { tip: 'Quantify achievements with numbers', icon: '📊' },
             { tip: 'Keep formatting clean and ATS-friendly', icon: '📄' },
             { tip: 'Match your title to the role applied for', icon: '✅' },
           ].map((t, i) => (
-            <div key={i} style={{
-              display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
-              padding: '0.875rem', borderRadius: '0.75rem',
-              background: 'rgba(6,182,212,0.05)', border: '1px solid rgba(6,182,212,0.1)',
-            }}>
-              <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>{t.icon}</span>
-              <p style={{ fontSize: '0.8rem', color: '#a0a0c0', lineHeight: 1.5 }}>{t.tip}</p>
+            <div key={i} className="flex items-start gap-3 p-3 rounded-md bg-accent/5 border border-accent/10">
+              <span className="text-lg flex-shrink-0">{t.icon}</span>
+              <p className="text-sm text-muted-foreground leading-relaxed">{t.tip}</p>
             </div>
           ))}
         </div>

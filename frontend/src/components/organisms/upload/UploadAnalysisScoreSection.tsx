@@ -18,48 +18,19 @@ const formatWeight = (weight?: number) =>
 
 function BreakdownBars({ title, items }: { title: string; items: BreakdownBarItem[] }) {
   return (
-    <div
-      style={{
-        background: 'rgba(15,15,26,0.9)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: '1.25rem',
-        padding: '1.5rem',
-      }}
-    >
-      <h3 style={{ fontWeight: 700, marginBottom: '1rem', fontSize: '1rem' }}>{title}</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+    <div className="bg-card border border-border rounded-2xl p-4">
+      <h3 className="font-semibold mb-4">{title}</h3>
+      <div className="flex flex-col gap-3">
         {items.map((item) => (
           <div key={item.label}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: '0.35rem',
-                fontSize: '0.825rem',
-              }}
-            >
-              <span style={{ color: '#c4c4e0' }}>
-                {item.label} <span style={{ color: '#666688' }}>({item.weight})</span>
+            <div className="flex justify-between mb-1 text-sm">
+              <span className="text-muted-foreground">
+                {item.label} <span className="text-muted-foreground/70">({item.weight})</span>
               </span>
-              <span style={{ fontWeight: 700, color: scoreColor(item.value) }}>{Math.round(item.value)}%</span>
+              <span className="font-bold" style={{ color: scoreColor(item.value) }}>{Math.round(item.value)}%</span>
             </div>
-            <div
-              style={{
-                height: '6px',
-                borderRadius: '99px',
-                background: 'rgba(255,255,255,0.06)',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  width: `${Math.min(100, item.value)}%`,
-                  height: '100%',
-                  borderRadius: '99px',
-                  background: scoreColor(item.value),
-                  transition: 'width 0.4s ease',
-                }}
-              />
+            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+              <div style={{ width: `${Math.min(100, item.value)}%`, background: scoreColor(item.value), transition: 'width 0.4s ease' }} className="h-full" />
             </div>
           </div>
         ))}
@@ -145,44 +116,26 @@ export function UploadAnalysisScoreSection({ result }: { result: AtsAnalysisResu
 
   return (
     <>
-      <div
-        style={{
-          background: 'rgba(15,15,26,0.9)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '1.25rem',
-          padding: '2rem',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+      <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6">
           <CheckCircle2 size={22} color="#10b981" />
-          <h2 style={{ fontWeight: 700, fontSize: '1.1rem' }}>Analysis Complete</h2>
+          <h2 className="font-bold text-lg">Analysis Complete</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
             { label: 'Match Score', value: `${matchScore}%`, score: matchScore },
             { label: 'ATS Score', value: atsScore, score: atsScore },
           ].map((item) => (
-            <div
-              key={item.label}
-              style={{
-                padding: '1.5rem',
-                borderRadius: '1rem',
-                textAlign: 'center',
-                background: `${scoreColor(item.score)}12`,
-                border: `1px solid ${scoreColor(item.score)}25`,
-              }}
-            >
-              <div style={{ fontSize: '2.5rem', fontWeight: 900, color: scoreColor(item.score), lineHeight: 1 }}>
-                {item.value}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: '#8888aa', marginTop: '0.375rem' }}>{item.label}</div>
+            <div key={item.label} className="p-6 rounded-lg text-center" style={{ background: `${scoreColor(item.score)}12`, border: `1px solid ${scoreColor(item.score)}25` }}>
+              <div className="text-4xl font-extrabold" style={{ color: scoreColor(item.score), lineHeight: 1 }}>{item.value}</div>
+              <div className="text-sm text-muted-foreground mt-1">{item.label}</div>
             </div>
           ))}
         </div>
-        <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#8888aa', lineHeight: 1.5 }}>
-          <strong style={{ color: '#c4c4e0' }}>Match Score</strong> — how well your resume fits this specific job
+        <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+          <strong className="text-muted-foreground/90">Match Score</strong> — how well your resume fits this specific job
           (skills + responsibilities weighted heavily).{' '}
-          <strong style={{ color: '#c4c4e0' }}>ATS Score</strong> — overall resume quality for applicant tracking
+          <strong className="text-muted-foreground/90">ATS Score</strong> — overall resume quality for applicant tracking
           systems.
         </p>
       </div>

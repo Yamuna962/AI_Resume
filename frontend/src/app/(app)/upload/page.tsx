@@ -68,14 +68,10 @@ export default function UploadPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', color: '#f0f0ff', maxWidth: '800px' }}>
-      <div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.375rem' }}>
-          Upload & Analyze
-        </h1>
-        <p style={{ color: '#8888aa', fontSize: '0.95rem' }}>
-          Upload your resume and paste the job description to get an instant AI-powered analysis.
-        </p>
+    <div className="max-w-3xl w-full mx-auto text-foreground flex flex-col gap-6">
+      <div className="mb-4">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">Upload & Analyze</h1>
+        <p className="text-sm text-muted-foreground">Upload your resume and paste the job description to get an instant AI-powered analysis.</p>
       </div>
 
       {!result ? (
@@ -89,7 +85,7 @@ export default function UploadPage() {
           onSubmit={handleSubmit}
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="flex flex-col gap-6">
           <UploadAnalysisScoreSection result={result} />
           <UploadAnalysisResultsSection
             result={result}

@@ -47,96 +47,39 @@ export function UploadAnalysisFormSection({
   });
 
   return (
-    <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{
-          background: 'rgba(15,15,26,0.9)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '1.25rem',
-          padding: '1.5rem',
-        }}
-      >
-        <h2 style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '1rem', color: '#c4c4e0' }}>
+    <form onSubmit={onSubmit} className="flex flex-col gap-6">
+      <div className="bg-card border border-border rounded-2xl p-4">
+        <h2 className="font-semibold text-sm mb-4 text-muted-foreground">
           1. Upload Resume (PDF)
         </h2>
         {!file ? (
           <div
             {...getRootProps()}
-            style={{
-              border: `2px dashed ${isDragActive ? '#7c3aed' : 'rgba(255,255,255,0.1)'}`,
-              borderRadius: '0.875rem',
-              padding: '2.5rem',
-              textAlign: 'center',
-              cursor: 'pointer',
-              background: isDragActive ? 'rgba(124,58,237,0.05)' : 'transparent',
-              transition: 'all 0.2s',
-            }}
+            className={`border-2 rounded-xl p-6 text-center cursor-pointer transition ${isDragActive ? 'border-primary bg-primary/5' : 'border-border/10'}`}
           >
             <input {...getInputProps()} />
-            <div
-              style={{
-                width: '3.5rem',
-                height: '3.5rem',
-                borderRadius: '0.875rem',
-                background: 'rgba(124,58,237,0.12)',
-                border: '1px solid rgba(124,58,237,0.25)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 1rem',
-                color: '#a78bfa',
-              }}
-            >
+            <div className="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 text-primary">
               <UploadCloud size={24} />
             </div>
-            <p style={{ fontWeight: 600, marginBottom: '0.375rem' }}>Click to upload or drag &amp; drop</p>
-            <p style={{ fontSize: '0.8rem', color: '#8888aa' }}>PDF only · Max 10MB</p>
+            <p className="font-semibold mb-1">Click to upload or drag &amp; drop</p>
+            <p className="text-sm text-muted-foreground">PDF only · Max 10MB</p>
           </div>
         ) : (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1rem',
-              padding: '1rem 1.25rem',
-              borderRadius: '0.875rem',
-              background: 'rgba(124,58,237,0.08)',
-              border: '1px solid rgba(124,58,237,0.2)',
-            }}
-          >
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-primary/5 border border-primary/10">
             <FileText size={20} color="#a78bfa" />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {file.name}
-              </p>
-              <p style={{ fontSize: '0.75rem', color: '#8888aa' }}>{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold truncate">{file.name}</p>
+              <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
-            <button
-              type="button"
-              onClick={() => onFileChange(null)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#5a5a7a',
-                padding: '0.25rem',
-              }}
-            >
+            <button type="button" onClick={() => onFileChange(null)} className="bg-transparent border-0 text-muted-foreground p-1">
               <X size={18} />
             </button>
           </div>
         )}
       </div>
 
-      <div
-        style={{
-          background: 'rgba(15,15,26,0.9)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '1.25rem',
-          padding: '1.5rem',
-        }}
-      >
-        <h2 style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '1rem', color: '#c4c4e0' }}>
+      <div className="bg-card border border-border rounded-2xl p-4">
+        <h2 className="font-semibold text-sm mb-4 text-muted-foreground">
           2. Paste Job Description
         </h2>
         <textarea
@@ -144,43 +87,13 @@ export function UploadAnalysisFormSection({
           onChange={(event) => onJobDescriptionChange(event.target.value)}
           placeholder="Paste the full job description here..."
           rows={10}
-          style={{
-            width: '100%',
-            background: 'rgba(13,13,22,0.8)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: '0.75rem',
-            padding: '0.875rem 1rem',
-            color: '#f0f0ff',
-            fontSize: '0.875rem',
-            outline: 'none',
-            resize: 'vertical',
-            fontFamily: 'Inter, sans-serif',
-            transition: 'border-color 0.2s',
-            boxSizing: 'border-box',
-          }}
-          onFocus={(event) => {
-            event.target.style.borderColor = 'rgba(124,58,237,0.6)';
-          }}
-          onBlur={(event) => {
-            event.target.style.borderColor = 'rgba(255,255,255,0.08)';
-          }}
+          className="w-full bg-transparent border border-border rounded-lg p-3 text-foreground text-sm resize-vertical font-sans focus:border-primary focus:ring-0"
         />
       </div>
 
       {error && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '0.75rem',
-            padding: '0.875rem 1rem',
-            background: 'rgba(239,68,68,0.1)',
-            border: '1px solid rgba(239,68,68,0.25)',
-            borderRadius: '0.75rem',
-            color: '#f87171',
-            fontSize: '0.875rem',
-          }}
-        >
-          <AlertCircle size={18} style={{ flexShrink: 0 }} />
+        <div className="flex gap-3 px-4 py-3 bg-red-900/10 border border-red-900/20 rounded-md text-red-400 text-sm items-start">
+          <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
           {error}
         </div>
       )}
@@ -188,34 +101,17 @@ export function UploadAnalysisFormSection({
       <button
         type="submit"
         disabled={!file || !jobDescription.trim() || loading}
-        style={{
-          padding: '0.875rem',
-          borderRadius: '0.75rem',
-          background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-          color: 'white',
-          border: 'none',
-          fontWeight: 700,
-          fontSize: '1rem',
-          cursor: !file || !jobDescription.trim() || loading ? 'not-allowed' : 'pointer',
-          opacity: !file || !jobDescription.trim() ? 0.5 : 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.5rem',
-          boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
-          transition: 'all 0.2s',
-        }}
+        className={`px-4 py-3 rounded-lg text-white font-bold text-base flex items-center justify-center gap-2 ${!file || !jobDescription.trim() ? 'opacity-50 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg'}`}
       >
         {loading ? (
           <>
-            <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+            <Loader2 size={18} className="animate-spin" />
             Analyzing...
           </>
         ) : (
           '🚀 Analyze My Resume'
         )}
       </button>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </form>
   );
 }

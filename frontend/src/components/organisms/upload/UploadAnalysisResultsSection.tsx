@@ -25,27 +25,13 @@ export function UploadAnalysisResultsSection({
   return (
     <>
       {matchedSkills.length > 0 && (
-        <div
-          style={{
-            background: 'rgba(15,15,26,0.9)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: '1.25rem',
-            padding: '1.5rem',
-          }}
-        >
-          <h3 style={{ fontWeight: 700, marginBottom: '1rem', fontSize: '1rem' }}>Matched Keywords</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <h3 className="font-bold mb-4">Matched Keywords</h3>
+          <div className="flex flex-wrap gap-2">
             {matchedSkills.map((keyword, index) => (
               <span
                 key={`${keyword}-${index}`}
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '99px',
-                  fontSize: '0.8rem',
-                  background: 'rgba(16,185,129,0.1)',
-                  border: '1px solid rgba(16,185,129,0.25)',
-                  color: '#34d399',
-                }}
+                className="px-3 py-1 rounded-full text-sm bg-green-500/10 border border-green-500/25 text-green-400"
               >
                 {keyword}
               </span>
@@ -55,41 +41,20 @@ export function UploadAnalysisResultsSection({
       )}
 
       {reasoning && (
-        <div
-          style={{
-            background: 'rgba(15,15,26,0.9)',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '1.25rem',
-            padding: '1.5rem',
-          }}
-        >
-          <h3 style={{ fontWeight: 700, marginBottom: '0.75rem', fontSize: '1rem' }}>Recruiter Analysis</h3>
-          <p style={{ color: '#a0a0c0', fontSize: '0.875rem', lineHeight: 1.6 }}>{reasoning}</p>
+        <div className="bg-card border border-primary/20 rounded-2xl p-6">
+          <h3 className="font-bold mb-3">Recruiter Analysis</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{reasoning}</p>
         </div>
       )}
 
       {missingSkills.length > 0 && (
-        <div
-          style={{
-            background: 'rgba(15,15,26,0.9)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: '1.25rem',
-            padding: '1.5rem',
-          }}
-        >
-          <h3 style={{ fontWeight: 700, marginBottom: '1rem', fontSize: '1rem' }}>Missing Keywords</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <h3 className="font-bold mb-4">Missing Keywords</h3>
+          <div className="flex flex-wrap gap-2">
             {missingSkills.map((keyword, index) => (
               <span
                 key={`${keyword}-${index}`}
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '99px',
-                  fontSize: '0.8rem',
-                  background: 'rgba(239,68,68,0.1)',
-                  border: '1px solid rgba(239,68,68,0.25)',
-                  color: '#f87171',
-                }}
+                className="px-3 py-1 rounded-full text-sm bg-red-500/10 border border-red-500/25 text-red-400"
               >
                 {keyword}
               </span>
@@ -99,81 +64,32 @@ export function UploadAnalysisResultsSection({
       )}
 
       {suggestions.length > 0 && (
-        <div
-          style={{
-            background: 'rgba(15,15,26,0.9)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: '1.25rem',
-            padding: '1.5rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.75rem',
-          }}
-        >
-          <h3 style={{ fontWeight: 700, marginBottom: '0.25rem', fontSize: '1rem' }}>AI Suggestions</h3>
+        <div className="bg-card border border-border rounded-2xl p-6 flex flex-col gap-3">
+          <h3 className="font-bold">AI Suggestions</h3>
           {suggestions.map((suggestion, index) => (
             <div
               key={`${suggestion.title}-${index}`}
-              style={{
-                padding: '0.875rem',
-                borderRadius: '0.75rem',
-                background: 'rgba(124,58,237,0.04)',
-                border: '1px solid rgba(124,58,237,0.1)',
-              }}
+              className="p-4 rounded-lg bg-primary/5 border border-primary/10"
             >
-              <div style={{ fontWeight: 600, color: '#c4b5fd', fontSize: '0.875rem', marginBottom: '0.2rem' }}>
-                {suggestion.title}
-              </div>
-              <div style={{ color: '#a0a0c0', fontSize: '0.825rem', lineHeight: 1.5 }}>{suggestion.description}</div>
+              <div className="font-semibold text-primary text-sm mb-1">{suggestion.title}</div>
+              <div className="text-sm text-muted-foreground leading-relaxed">{suggestion.description}</div>
             </div>
           ))}
         </div>
       )}
 
       {rewrittenResume && (
-        <div
-          style={{
-            background: 'rgba(15,15,26,0.9)',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '1.25rem',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="bg-card border border-primary/15 rounded-2xl overflow-hidden">
           <button
             onClick={onToggleRewrite}
-            style={{
-              width: '100%',
-              padding: '1.25rem 1.5rem',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              color: '#f0f0ff',
-              fontWeight: 700,
-              fontSize: '1rem',
-            }}
+            className="w-full px-6 py-4 bg-transparent text-foreground flex items-center justify-between font-semibold"
           >
             <span>✨ AI-Rewritten Resume</span>
             {showRewrite ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
           {showRewrite && (
-            <div style={{ padding: '0 1.5rem 1.5rem' }}>
-              <pre
-                style={{
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                  fontSize: '0.825rem',
-                  color: '#c4c4e0',
-                  lineHeight: 1.6,
-                  background: 'rgba(0,0,0,0.3)',
-                  borderRadius: '0.75rem',
-                  padding: '1.25rem',
-                  maxHeight: '500px',
-                  overflowY: 'auto',
-                }}
-              >
+            <div className="px-6 pb-6">
+              <pre className="whitespace-pre-wrap break-words text-sm text-muted-foreground leading-relaxed bg-muted/20 rounded-lg p-4 max-h-[500px] overflow-y-auto">
                 {rewrittenResume}
               </pre>
             </div>
@@ -183,16 +99,7 @@ export function UploadAnalysisResultsSection({
 
       <button
         onClick={onReset}
-        style={{
-          padding: '0.75rem',
-          borderRadius: '0.75rem',
-          background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          color: '#c4c4e0',
-          fontWeight: 600,
-          cursor: 'pointer',
-          fontSize: '0.9rem',
-        }}
+        className="px-4 py-3 rounded-lg bg-muted/50 border border-border text-foreground font-semibold text-sm hover:bg-muted transition-colors"
       >
         ← Analyze Another Resume
       </button>
