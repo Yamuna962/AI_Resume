@@ -38,7 +38,7 @@ export function TopNavbar() {
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/80 px-4 md:px-6 backdrop-blur-xl md:justify-end">
       {/* Mobile Menu - visible only on small screens */}
       <Dialog>
-        <DialogTrigger asChild>
+        <DialogTrigger>
           <div className="md:hidden">
             <Button variant="ghost" size="icon" aria-label="Open menu">
               <Menu className="h-5 w-5" />
@@ -53,7 +53,7 @@ export function TopNavbar() {
               </div>
               <span className="text-lg font-bold tracking-tight">AI Resume</span>
             </div>
-            <DialogClose asChild>
+            <DialogClose>
               <Button variant="ghost" size="icon" aria-label="Close menu">
                 <X className="h-4 w-4" />
               </Button>
