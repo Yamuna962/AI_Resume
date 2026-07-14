@@ -40,10 +40,7 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   });
 
   // Required for free Pinggy tunnels
-<<<<<<< HEAD
-=======
-  // Required for localtunnel bypass
->>>>>>> 9053685fccf8090d4c0c5eb2c8637525830d2ad2
+
   headers.set("bypass-tunnel-reminder", "true");
 
   // Optional: set a custom User-Agent
