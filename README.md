@@ -5,6 +5,19 @@ It uploads a resume PDF, parses it, compares it against a job description, compu
 
 ---
 
+## 🔗 Live Links
+
+| Service | URL |
+|---------|-----|
+| **Frontend (Vercel)** | https://ai-resume-b39jyq11c-yamunakallakuri-6253s-projects.vercel.app |
+| **Backend (LocalTunnel)** | https://nasty-sheep-flash.loca.lt |
+| **Backend Health Check** | https://nasty-sheep-flash.loca.lt/health |
+| **API Docs (Swagger)** | https://nasty-sheep-flash.loca.lt/docs |
+
+> ⚠️ The backend is currently tunneled via **localtunnel** and runs locally. The tunnel URL may change on restart. Update `BACKEND_URL` on Vercel when it does.
+
+---
+
 ## What the app does
 
 - Upload a PDF resume
@@ -14,40 +27,28 @@ It uploads a resume PDF, parses it, compares it against a job description, compu
 - Compute deterministic:
   - ATS Score
   - Match Score
-  - score breakdowns
-  - matched / missing / transferable skills
+  - Score breakdowns
+  - Matched / missing / transferable skills
 - Generate recruiter-style analysis and rewrite suggestions
 - Save the analysis in PostgreSQL
 
 ---
 
-## Current runtime flow
-
-````markdown
 ## Current Runtime Flow
 
 ```mermaid
 flowchart LR
 
     User([👤 User])
-
     Browser["🌐 Browser"]
-    Frontend["⚛️ Next.js Frontend"]
-
-    Proxy["🔀 Next.js API Proxy<br/>/api/v1"]
-
-    Backend["🚀 FastAPI Backend"]
-
+    Frontend["⚛️ Next.js Frontend\n(Vercel)"]
+    Proxy["🔀 Next.js API Proxy\n/api/v1"]
+    Backend["🚀 FastAPI Backend\n(LocalTunnel → localhost:8000)"]
     PDF["📄 Resume PDF Extraction"]
-
     ATS["🧠 ATS Orchestrator"]
-
     Score["📊 Deterministic ATS Engine"]
-
-    LLM["🤖 LLM Recruiter Explanation<br/>+ Audit"]
-
+    LLM["🤖 LLM Recruiter Explanation\n+ Audit"]
     DB[("🗄️ PostgreSQL / Supabase")]
-
     Response["📦 JSON Response"]
 
     User --> Browser
@@ -62,30 +63,31 @@ flowchart LR
     LLM --> Response
     Response --> Frontend
     Frontend --> Browser
+```
 
 ### Important frontend/backend calling detail
 The frontend **does not call the backend directly from the browser**.
 It uses the Next.js proxy route at:
 
-- `frontend/src/app/api/v1/[...path]/route.ts`
+```
+frontend/src/app/api/v1/[...path]/route.ts
+```
 
-That proxy forwards requests to the backend using:
-
-- `BACKEND_URL`
+That proxy forwards requests to the backend using `BACKEND_URL`.
 
 So in production:
-- the browser calls **your frontend domain**
-- the frontend server forwards to **your backend domain**
+- the browser calls **your Vercel frontend**
+- the Vercel server forwards to **your localtunnel backend URL**
 
 This means:
-- `BACKEND_URL` is the important frontend deployment variable
+- `BACKEND_URL` is the only required frontend deployment variable
 - `NEXT_PUBLIC_API_URL` is **not required** for the normal deployed flow
 
 ---
 
-## ATS scoring flow
+## ATS Scoring Flow
 
-Scores are computed by the backend deterministically first.
+Scores are computed by the backend **deterministically first**.
 The LLM does **not** decide the ATS or Match score.
 
 ```mermaid
@@ -115,7 +117,7 @@ flowchart TD
 
 ---
 
-## Tech stack
+## Tech Stack
 
 ### Frontend
 - Next.js **16**
@@ -127,7 +129,7 @@ flowchart TD
 
 ### Backend
 - FastAPI
-- Python **3.11 recommended**
+- Python **3.11**
 - SQLAlchemy async + `asyncpg`
 - Pydantic v2
 - PyMuPDF / OCR fallback
@@ -135,14 +137,36 @@ flowchart TD
 - Groq + Gemini
 
 ### Infrastructure
-- Vercel for frontend
-- Render for backend
-- Supabase PostgreSQL for database
-- GitHub Actions for CI/CD
+- **Vercel** — Frontend hosting
+- **LocalTunnel** — Backend tunnel (development/demo)
+- **Supabase** — PostgreSQL database
+- **GitHub Actions** — CI/CD
 
 ---
 
-## Repository structure
+## AI Approach
+
+- **Deterministic first**: ATS and Match scores are computed with rule-based + semantic matchers — not by the LLM
+- **LLM for explanation only**: Groq/Gemini generates recruiter-style feedback based on the already-computed scores
+- **Structured JSON outputs**: All LLM responses are schema-validated before use
+- **Graceful fallback**: If LLM fails or returns malformed output, the app still returns deterministic scores without crashing
+- **Audit pass**: A second LLM call audits the first response for consistency before returning to the user
+
+---
+
+## Key Trade-offs & Decisions
+
+| Decision | Reason |
+|----------|--------|
+| Deterministic scoring before LLM | Prevents hallucinated scores; LLM only explains, not decides |
+| Next.js proxy instead of direct backend calls | Hides backend URL, centralizes auth headers, avoids CORS issues |
+| Groq + Gemini (both) | Groq for speed, Gemini as fallback if Groq fails |
+| LocalTunnel for backend | Corporate network blocks all outbound SSH ports; localtunnel works through HTTP |
+| Supabase for auth + DB | Handles hashed passwords, JWT, per-user data isolation out of the box |
+
+---
+
+## Repository Structure
 
 ```text
 AI_Resume/
@@ -166,11 +190,9 @@ AI_Resume/
 
 ---
 
-## Environment variables
+## Environment Variables
 
-## Backend (`backend/.env`)
-
-Copy `backend/.env.example` to `backend/.env` and fill in the real values.
+### Backend (`backend/.env`)
 
 ```env
 DATABASE_URL=postgresql+asyncpg://USER:PASSWORD@HOST:5432/postgres
@@ -190,39 +212,23 @@ LOG_LEVEL=INFO
 TESSERACT_CMD=
 ```
 
-### Backend variable notes
-- `DATABASE_URL`: required
-- `SUPABASE_*`: required for current project config
-- `JWT_SECRET_KEY`: must be long and random in production
-- `CORS_ORIGINS`: JSON array string preferred
-- `ENVIRONMENT`: `development`, `testing`, `staging`, or `production`
-- `TESSERACT_CMD`: optional; leave blank when `tesseract` is already on your system `PATH`
-
----
-
-## Frontend (`frontend/.env.local`)
-
-Copy `frontend/.env.local.example` to `frontend/.env.local` and fill in the real values.
+### Frontend (`frontend/.env.local`)
 
 ```env
-BACKEND_URL=http://127.0.0.1:8000
+BACKEND_URL=https://nasty-sheep-flash.loca.lt
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-### Frontend variable notes
-- `BACKEND_URL`: **required in deployment**, optional locally because the proxy defaults to `http://127.0.0.1:8000`
-- `NEXT_PUBLIC_SUPABASE_URL`: required if frontend auth/client code uses Supabase
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: required if frontend auth/client code uses Supabase
-- `NEXT_PUBLIC_API_URL`: optional only; not needed for the main deployed flow
+> ⚠️ Update `BACKEND_URL` every time the localtunnel URL changes after a restart.
 
 ---
 
-## Local development
+## Local Development Setup
 
 ### Prerequisites
 - Node.js 20+
-- Python 3.11 recommended
+- Python 3.11
 - Supabase / PostgreSQL database
 - Groq API key and/or Gemini API key
 
@@ -235,33 +241,41 @@ cd AI_Resume
 
 ### 2) Create environment files
 
-- Copy `backend/.env.example` to `backend/.env`
-- Copy `frontend/.env.local.example` to `frontend/.env.local`
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.local.example frontend/.env.local
+```
 
-Then replace the placeholder values with your real project credentials.
+Fill in your real credentials.
 
-### 3) Install and run the backend
+### 3) Run the backend
 
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 python -m alembic upgrade head
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Windows shortcut
-You can also use:
-
+**Windows shortcut:**
 ```powershell
 cd backend
 powershell -ExecutionPolicy Bypass -File .\start.ps1
 ```
 
-The PowerShell script applies `python -m alembic upgrade head` before starting Uvicorn.
+### 4) Start localtunnel (to expose backend publicly)
 
-### 4) Install and run the frontend
+```bash
+lt --port 8000 --subdomain airesume
+```
+
+This gives you: `https://airesume.loca.lt`
+
+Update `BACKEND_URL` on Vercel with this URL and redeploy.
+
+### 5) Run the frontend
 
 ```bash
 cd frontend
@@ -269,226 +283,58 @@ npm install
 npm run dev
 ```
 
-Frontend:
-- `http://localhost:3000`
-
-Backend:
-- `http://127.0.0.1:8000`
+- Frontend: `http://localhost:3000`
+- Backend: `http://127.0.0.1:8000`
 - Swagger: `http://127.0.0.1:8000/docs`
 
-### 5) Database migration behavior
-The backend schema is now managed through **Alembic**.
-Run this whenever you set up a fresh database or pull a schema change:
+### 6) Run database migrations
 
 ```bash
 cd backend
 python -m alembic upgrade head
 ```
 
-The initial migration creates the core tables, including `resume_embeddings`.
-Because the project uses `pgvector` and `gen_random_uuid()`, make sure your PostgreSQL instance allows the `vector` and `pgcrypto` extensions.
-
 ---
 
-## Recommended production deployment
+## Production Deployment
 
-## Deploy order
-Deploy in this order:
-
+### Deploy order
 1. **Supabase / PostgreSQL**
-2. **Backend (Render)**
-3. **Frontend (Vercel)**
-4. **Update CORS and frontend `BACKEND_URL`**
-5. **Smoke test upload + analyze flow**
+2. **Backend** (locally via localtunnel, or Render)
+3. **Frontend** (Vercel)
+4. **Update `BACKEND_URL` on Vercel** with backend URL
+5. **Smoke test** upload + analyze flow
 
----
+### Frontend on Vercel
 
-## 1) Database / Supabase
+| Variable | Value |
+|----------|-------|
+| `BACKEND_URL` | `https://nasty-sheep-flash.loca.lt` (update when tunnel restarts) |
+| `NEXT_PUBLIC_SUPABASE_URL` | your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your Supabase anon key |
 
-Create a Supabase project and get:
-- project URL
-- anon key
-- service role key
-- Postgres connection string
-
-Use the Postgres connection string as `DATABASE_URL` in the backend.
-
-> Note: the current scaffold stores a mock `storage_url` for uploaded resumes. You can still create a `resumes` bucket now to stay aligned with config, but backend file upload is currently database-first and not fully storage-backed yet.
-
----
-
-## 2) Deploy backend to Render
-
-You have two workable paths:
-
-### Option A — Use the existing Dockerfile (recommended)
-The repo already includes:
-- `backend/Dockerfile`
-
-That Docker image now:
-- installs `tesseract-ocr` for scanned PDF fallback
-- runs `python -m alembic upgrade head` before starting Uvicorn
-
-On Render:
-1. Create a new **Web Service**
-2. Connect the GitHub repo
-3. Set **Root Directory** to `backend`
-4. Choose the Docker deployment path if Render detects the Dockerfile
-5. Set environment variables from the backend table above
-6. Deploy
-
-### Option B — Use build/start commands
-If you prefer command-based deployment on Render:
+### Backend on Render (optional upgrade from localtunnel)
 
 - Root Directory: `backend`
-- Build Command:
-
-```bash
-pip install -r requirements.txt
-```
-
 - Start Command:
-
 ```bash
 sh -c "python -m alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"
 ```
-
-### Backend production env suggestions
-
-```env
-ENVIRONMENT=production
-LOG_LEVEL=INFO
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-RATELIMIT_PER_MINUTE=20
-CORS_ORIGINS=["https://your-frontend-domain.vercel.app"]
-```
-
-### Backend health check
-Use:
-
-```text
-/health
-```
-
-Once deployed, note the backend URL, for example:
-
-```text
-https://ai-resume-backend.onrender.com
-```
+- Set all backend env variables in Render dashboard
 
 ---
 
-## 3) Deploy frontend to Vercel
+## API Docs
 
-On Vercel:
-1. Import the GitHub repo
-2. Set **Root Directory** to `frontend`
-3. Framework preset: **Next.js**
-4. Add environment variables:
-
-```env
-BACKEND_URL=https://your-render-backend.onrender.com
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
-
-5. Deploy
-
-### Why `BACKEND_URL` matters
-The frontend server route:
-- `frontend/src/app/api/v1/[...path]/route.ts`
-
-forwards `/api/v1/*` requests to the backend using `BACKEND_URL`.
-
-So on Vercel, the correct setup is:
-- browser → Vercel frontend
-- Vercel frontend proxy → Render backend
-
-You usually **do not need** `NEXT_PUBLIC_API_URL` for this production setup.
-
----
-
-## 4) Production smoke test
-
-After both services are deployed:
-
-1. Open the frontend URL
-2. Register / sign in
-3. Upload a PDF resume
-4. Paste a job description
-5. Confirm the request succeeds end-to-end
-6. Confirm the backend `/health` endpoint is healthy
-7. Confirm scores + explanation render in the frontend
-
-If something fails, check these first:
-- `BACKEND_URL` on Vercel
-- `DATABASE_URL` on Render
-- `CORS_ORIGINS` on Render
-- Supabase keys
-- Groq / Gemini keys
-
----
-
-## CI/CD notes
-
-The repo includes:
-- `.github/workflows/deploy.yml`
-
-Current workflow behavior:
-- backend checks/tests
-- frontend typecheck/lint/build
-- Vercel deployment on `main`
-- Render deploy hook trigger on `main`
-
-If you use that workflow, you will also need the usual GitHub secrets such as:
-- `DATABASE_URL`
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_KEY`
-- `GROQ_API_KEY`
-- `GEMINI_API_KEY`
-- `JWT_SECRET_KEY`
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-- `RENDER_DEPLOY_HOOK_URL`
-
----
-
-## Notes about Docker Compose
-
-The root `docker-compose.yml` is scaffolding for a fuller local container setup.
-However, this repository currently includes:
-- `backend/Dockerfile`
-- **no committed `frontend/Dockerfile`**
-
-So the documented and supported flow in this README is:
-- local dev via `uvicorn` + `npm run dev`
-- production deploy via **Render + Vercel**
-
-If you want a fully working all-in Docker local stack, add a `frontend/Dockerfile` first.
-
----
-
-## API docs
-
-When the backend is running locally:
-- Swagger UI: `http://127.0.0.1:8000/docs`
-- ReDoc: `http://127.0.0.1:8000/redoc`
+- Swagger UI: https://nasty-sheep-flash.loca.lt/docs
+- ReDoc: https://nasty-sheep-flash.loca.lt/redoc
+- Health: https://nasty-sheep-flash.loca.lt/health
 
 ---
 
 ## Summary
 
-### Local flow
-- Frontend runs on `localhost:3000`
-- Backend runs on `127.0.0.1:8000`
-- Frontend proxy forwards `/api/v1/*` to backend
-
-### Production flow
-- Frontend on **Vercel**
-- Backend on **Render**
-- Database on **Supabase**
-- Frontend proxy uses `BACKEND_URL` to forward API requests to Render
-
-If you deploy using that flow, your app architecture matches the code exactly.
+| Environment | Frontend | Backend | Database |
+|-------------|----------|---------|----------|
+| Local | `localhost:3000` | `127.0.0.1:8000` | Supabase |
+| Production | Vercel | LocalTunnel → `localhost:8000` | Supabase |
