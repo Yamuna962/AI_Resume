@@ -22,9 +22,7 @@ export default function UploadPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!file || !jobDesc.trim()) {
-      return;
-    }
+    if (!file || !jobDesc.trim()) return;
 
     setLoading(true);
     setError('');
@@ -39,9 +37,7 @@ export default function UploadPage() {
       });
       const resumeId = uploadResponse.data.resume_id ?? uploadResponse.data.id;
 
-      if (!resumeId) {
-        throw new Error('Failed to retrieve resume ID after upload.');
-      }
+      if (!resumeId) throw new Error('Failed to retrieve resume ID after upload.');
 
       const analysisResponse = await api.post<AnalysisRunResponse>('/analysis/run', {
         resume_id: resumeId,
@@ -55,7 +51,11 @@ export default function UploadPage() {
         response?: { data?: { detail?: string } };
         message?: string;
       };
-      setError(uploadError.response?.data?.detail || uploadError.message || 'Analysis failed. Please try again.');
+      setError(
+        uploadError.response?.data?.detail ||
+          uploadError.message ||
+          'Analysis failed. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -65,13 +65,23 @@ export default function UploadPage() {
     setResult(null);
     setFile(null);
     setJobDesc('');
+    setError('');
   };
 
   return (
+    /*
+      max-w-3xl + w-full + mx-auto: centres the column on desktop,
+      full-width on mobile. gap-6 matches the rest of the app shell.
+      Removed the extra mb-4 wrapper — gap-6 handles spacing uniformly.
+    */
     <div className="max-w-3xl w-full mx-auto text-foreground flex flex-col gap-6">
-      <div className="mb-4">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">Upload & Analyze</h1>
-        <p className="text-sm text-muted-foreground">Upload your resume and paste the job description to get an instant AI-powered analysis.</p>
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-1">
+          Upload &amp; Analyze
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Upload your resume and paste the job description to get an instant AI-powered analysis.
+        </p>
       </div>
 
       {!result ? (
@@ -90,7 +100,7 @@ export default function UploadPage() {
           <UploadAnalysisResultsSection
             result={result}
             showRewrite={showRewrite}
-            onToggleRewrite={() => setShowRewrite((current) => !current)}
+            onToggleRewrite={() => setShowRewrite((prev) => !prev)}
             onReset={handleReset}
           />
         </div>
