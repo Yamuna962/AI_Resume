@@ -40,7 +40,7 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   });
 
   // Required for free Pinggy tunnels
-  headers.set("X-Pinggy-No-Screen", "true");
+  headers.set("bypass-tunnel-reminder", "true");
 
   // Optional: set a custom User-Agent
   headers.set("User-Agent", "AI-Resume-Vercel");
